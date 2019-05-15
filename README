@@ -1,0 +1,18 @@
+*************
+*  PRÁCTICA 1
+* (c) Rafael Berlanga
+*************
+
+Para probar el funcionamiento del API REST de prueba debes seguir los siguientes pasos:
+
+ 1) Ejecuta: node server.js para arrancar el servicio REST.
+ 2) Ejecuta: abre en el browser la página http://localhost:8000/web
+ 3) Ejecuta: node test_server.js desde otra terminal para probar el servicio.
+ 4) Comprueba que en la página web llegan los eventos del servidor
+
+ Cuando tengas las credenciales de Twitter:
+
+ 1) Configura el fichero credentials/my-credential.json con tus credenciales
+ 2) Ejecuta: node test_twitter.js para probar el streaming de Twitter durante 20 segundos.
+
+¡¡Y a empezar la práctica!!
