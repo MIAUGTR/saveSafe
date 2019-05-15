@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+
+    <title>Save&Safe</title>
+
+    <!-- Required Stylesheets -->
+    <link
+            type="text/css"
+            rel="stylesheet"
+            href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"
+    />
+    <link
+            type="text/css"
+            rel="stylesheet"
+            href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"
+    />
+
+    <!-- Required scripts -->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+</head>
+<body>
+<!-- Our application root element -->
+<div id="app">
+    <b-container>
+        <b-jumbotron header="Save&Safe" lead="Ahorre con cabeza">
+            <p>Las instrucciones de esta página están en minúscula</p>
+        </b-jumbotron>
+
+        <b-form-group
+                horizontal
+                :label-cols="4"
+                description="Let us know your name."
+                label="Enter your name"
+        >
+            <b-form-input v-model.trim="givenName"></b-form-input>
+            <b-form-input v-model.trim="information"></b-form-input>
+        </b-form-group>
+
+        <b-alert variant="success" :show="showAlert">Hello {{ givenName }}</b-alert>
+
+        <!--<form method="post" action="/user/add" >
+          <label for="name">Nombre</label>
+          <input type="text" name="name" />
+          <small id="name" class="form-text text-muted">
+            Escribe el nombre del usuario.
+          </small>
+
+          <label for="familyName">Apellido</label>
+          <input type="text" name="familyName"/>
+          <small id="familyName" class="form-text text-muted">
+            Escribe el apellido del usuario.
+          </small>
+
+          <label for="email">Email</label>
+          <input type="email" name="email" />
+          <small id="email" class="form-text text-muted">
+            Escribe el email del usuario. Pulsa "enter" si quieres insertar los datos.
+          </small>
+          <input type="submit" value="Envia" >
+        </form>-->
+
+        <label for="givenName">Nombre</label>
+        <input type="text" id="givenName" class="form-control" v-model="givenName"/>
+        <small id="givenNameDescription" class="form-text text-muted">
+            Escribe el nombre del usuario.
+        </small>
+        <label for="familyName">Apellido</label>
+        <input type="text" id="familyName" class="form-control" v-model="familyName"/>
+        <small id="familyNameDescription" class="form-text text-muted">
+            Escribe el apellido del usuario.
+        </small>
+        <label for="email">Email</label>
+        <input type="email" id="email" class="form-control" @keyup.Enter="envia" v-model="email"/>
+        <small id="emailDescription" class="form-text text-muted">
+            Escribe el email del usuario. Pulsa "enter" si quieres insertar los datos.
+        </small>
+
+        <b-button class="btn btn-primary btn-sm" variant="succes" @click="envia()" >Enviar</b-button>
+
+        <b-button class="btn btn-information btn-sm" v-on:click="listar()">VER USUARIOS</b-button>
+        <br/><br/>
+
+        <div>
+            <p id="resultado"></p>
+        </div>
+        <br/>
+
+        <div>
+            <p id="usuarios"></p>
+        </div>
+
+        <b-button class="btn btn-primary btn-sm" variant="danger" v-on:click="delUser(23a9716bbac8ab7e449f6e90520038ec, 1-2118961ed1340f4c466de53d6d6000fa)">Eliminar</b-button>
+
+
+        <!--        		Usuarios de la base de datos:-->
+<!--        		<ul>-->
+<!--        		  <li v-for="user, id in data">-->
+<!--        			{{id}} - {{user.familyName}} - {{user.email}}-->
+<!--        		  </li>-->
+<!--        		</ul>-->
+
+<!--        		Informes de la base de datos:-->
+<!--        		<small id="informe" class="form-text text-muted">-->
+<!--        		  Si desea ver los informes, ejecute el fichero test-server.js-->
+<!--        		</small>-->
+<!--        	  <ul>-->
+<!--        		<br/>-->
+<!--        		<li v-for="informe, id in reports">-->
+<!--        		  {{informe.givenName}} - {{informe.information}}-->
+<!--        		  <b-button class="btn btn-primary btn-sm" variant="danger" @click="delRep(id)">Eliminar</b-button>-->
+<!--        		</li>-->
+<!--        	  </ul>-->
+    </b-container>
+</div>
+
+<!-- Start running your app -->
+<script>
+    window.app = new Vue({
+        el: '#app',
+        data: {
+            id: '',
+            name: '',
+            givenName: '',
+            familyName: '',
+            email: '',
+            users: [],
+            information: '',
+            reports: []
+    },
+        methods: {
+            listar: function() {
+                var xhr = new XMLHttpRequest();
+                document.getElementById("usuarios").innerHTML ="";
+                xhr.open("GET", "/users", true);
+                xhr.setRequestHeader("Content-type", "application/json");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        let datos = JSON.parse(xhr.responseText);
+                        datos.rows.forEach(function(row){
+                            document.getElementById("usuarios").innerHTML += "userId: " + row.id + " - rev: " + row.value.rev + "" +
+                                " - givenName: " + row.value.givenName + " - familyName: " + row.value.familyName + " - email: " + row.value.email + " " +
+                                "<b-button v-model='id' class='btn btn-danger btn-sm' v-on:click='delUser(row.id, row.value.rev)'>Eliminar</b-button><br><br>";
+                        });
+                    }
+                };
+                xhr.send();
+            },
+            envia: function () {
+                var data = {
+                    givenName: document.getElementById('givenName').value,
+                    familyName: document.getElementById('familyName').value,
+                    email: document.getElementById('email').value
+                };
+                console.log(JSON.stringify(data));
+                document.getElementById("resultado").innerText = "";
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/user/add", true);
+                xhr.setRequestHeader("Content-type", "application/json");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        document.getElementById("resultado").innerText = "Se han enviado correctamente los datos";
+                        data.id = xhr.responseText;
+                    }
+                };
+                xhr.send(JSON.stringify(data));
+                this.givenName = '';
+                this.familyName = '';
+                this.email = '';
+            }
+        },
+        delUser: function(id, rev){
+            xhr.open("POST", "/user/delete/", true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    document.getElementById("resultado").innerText = "Se han eliminado al usuario" + id;
+                    var respuesta = xhr.responseText;
+                    console.log(respuesta);
+                }
+            };
+            xhr.send(id, rev);
+        },
+        delRep(index) {
+            //this.$delete(this.reports, index);
+        },
+        created() {
+            var self = this
+            var ES = new EventSource('/news');
+
+            console.log('Creando listener de eventos de servidor...');
+
+            ES.addEventListener('updates', function (event) {
+                var data = JSON.parse(JSON.parse(event.data)) //bytes to string -> string to json
+                console.log(data)
+                self.users.push(data)
+            }, false)
+            ES.addEventListener('informes', function (event) {
+                var data = JSON.parse(JSON.parse(event.data))
+                console.log(data)
+                self.reports.push(data)
+            }, false)
+
+        },
+        computed: {
+            showAlert() {
+                return this.name.length > 4 ? true : false
+            }
+        },
+        mounted() {
+            var self = this
+            //Inyectamos usuarios actuales en la componente Vuw
+            /*fetch('/user').then(function(r){return r.json()})
+                          .then(function(j){self.users.push(...j.result)})
+          fetch('/report').then(function(m){return m.json()})
+                          .then(function(k){self.reports.push(...k.result)})*/
+        }
+    })
+</script>
+</body>
+</html>
